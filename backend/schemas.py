@@ -1,11 +1,11 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserBaseScheme(BaseModel):
-    email: str
+    email: EmailStr
 
 class UserCreateScheme(UserBaseScheme):
-    hashed_password: str
+    password: str
 
     class Config:
         from_attributes = True
@@ -19,7 +19,7 @@ class UserScheme(UserBaseScheme):
 class LeadBaseScheme(BaseModel):
     first_name: str
     last_name: str
-    email: str
+    email: EmailStr
     company: str
     note: str
 
