@@ -5,12 +5,12 @@ from sqlalchemy.orm import Session
 
 from services import get_current_user
 from services import get_db, get_user_by_email, create_user, authenticate_user, create_token
-from schemas import UserCreate, User
+from schemas import UserCreateScheme, UserScheme
 
 app = FastAPI()
 
 @app.post("/api/users")
-async def user_create(user: UserCreate, db: Session = Depends(get_db)):
+async def user_create(user: UserCreateScheme, db: Session = Depends(get_db)):
     db_user = await get_user_by_email(user.email, db)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -26,8 +26,8 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends(), db: S
 
     return await create_token(user)
 
-@app.get("/api/users/me", response_model=User)
-async def get_user(user: User = Depends(get_current_user)):
+@app.get("/api/users/me", response_model=UserScheme)
+async def get_user(user: UserScheme = Depends(get_current_user)):
     return user
 
 

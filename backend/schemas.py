@@ -1,32 +1,32 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
+class UserBaseScheme(BaseModel):
     email: str
 
-class UserCreate(UserBase):
+class UserCreateScheme(UserBaseScheme):
     hashed_password: str
 
     class Config:
         from_attributes = True
 
-class User(UserBase):
+class UserScheme(UserBaseScheme):
     id: int
 
     class Config:
         from_attributes = True
 
-class LeadBase(BaseModel):
+class LeadBaseScheme(BaseModel):
     first_name: str
     last_name: str
     email: str
     company: str
     note: str
 
-class LeadCreate(LeadBase):
+class LeadCreateScheme(LeadBaseScheme):
     pass
 
-class Lead(LeadBase):
+class LeadScheme(LeadBaseScheme):
     id: int
     owner_id: int
     date_created: datetime

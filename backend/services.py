@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
 from models import User
-import schemas
+from schemas import UserCreateScheme, UserScheme
 from passlib.hash import bcrypt
 import jwt
 from config import settings
@@ -23,7 +23,7 @@ def get_db():
 async def get_user_by_email(email: str, db: Session):
     return db.query(User).filter(User.email == email).first()
 
-async def create_user(user: schemas.UserCreate, db: Session):
+async def create_user(user: UserCreateScheme, db: Session):
     user_obj = User(email=user.email, hashed_password=bcrypt.hash(user.hashed_password))
     db.add(user_obj)
     db.commit()
@@ -40,9 +40,9 @@ async def authenticate_user(email: str, password: str, db: Session):
     return user
 
 async def create_token(user: User):
-    user_obj = schemas.User.from_orm(user)
+    user_obj = UserScheme.model_validate(user)
 
-    token = jwt.encode(user_obj.dict(), settings.JWT_SECRET)
+    token = jwt.encode(user_obj.model_dump(), settings.JWT_SECRET)
 
     return dict(access_token=token, token_type="Bearer")
 
@@ -53,4 +53,4 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     except:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    return schemas.User.from_orm(user)
+    return UserScheme.model_validate(user)
