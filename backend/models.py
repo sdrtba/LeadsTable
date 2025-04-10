@@ -2,10 +2,10 @@ from datetime import datetime, UTC
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from passlib.hash import bcrypt
 from sqlalchemy.orm import relationship
+from database import Base
 
-import database
 
-class User(database.Base):
+class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
@@ -16,7 +16,7 @@ class User(database.Base):
     def verify_password(self, password: str):
         return bcrypt.verify(password, self.hashed_password)
 
-class Lead(database.Base):
+class Lead(Base):
     __tablename__ = "leads"
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))

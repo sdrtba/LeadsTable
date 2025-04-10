@@ -8,13 +8,13 @@ class UserCreate(UserBase):
     hashed_password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LeadBase(BaseModel):
     first_name: str
@@ -33,4 +33,4 @@ class Lead(LeadBase):
     date_last_updated: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
