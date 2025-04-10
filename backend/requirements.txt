@@ -3,3 +3,11 @@ sqlalchemy
 fastapi[all]
 pyjwt
 black
+
+alembic
+asyncpg
+psycopg
+psycopg-binary
+pydantic
+pydantic-settings
+uvicorn
