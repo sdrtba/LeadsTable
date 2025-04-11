@@ -1,8 +1,9 @@
 from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.orm import Session
+
 from database import Base, engine, SessionLocal
-from models import User
-from schemas import UserCreateScheme, UserScheme
+from models import User, Lead
+from schemas import UserCreateScheme, UserScheme, LeadCreateScheme, LeadScheme
 from passlib.hash import bcrypt
 from config import settings
 from fastapi import Depends, HTTPException
@@ -64,3 +65,52 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         raise HTTPException(status_code=401, detail="Invalid token")
 
     return user
+
+async def create_lead(user: UserScheme, db: Session, lead: LeadCreateScheme):
+    lead = Lead(**lead.model_dump(), owner_id=user.id)
+    db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    return LeadScheme.model_validate(lead)
+
+
+async def get_leads(user: UserScheme, db: Session):
+    leads = db.query(Lead).filter_by(owner_id=user.id)
+    return list(map(LeadScheme.model_validate, leads))
+
+async def _lead_selector(lead_id: int, user: UserScheme, db: Session):
+    lead = db.query(Lead).filter_by(owner_id=user.id).filter(Lead.id == lead_id).first()
+
+    if lead is None:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    return lead
+
+async def get_lead(lead_id: int, user: UserScheme, db: Session):
+    lead = await _lead_selector(lead_id, user, db)
+    return LeadScheme.model_validate(lead)
+
+async def delete_lead(lead_id: int, user: UserScheme, db: Session):
+    lead = await _lead_selector(lead_id, user, db)
+
+    if lead is None:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    db.delete(lead)
+    db.commit()
+
+
+async def update_lead(lead_id: int, lead:LeadCreateScheme, user: UserScheme, db: Session):
+    lead_db = await _lead_selector(lead_id, user, db)
+
+    lead_db.first_name = lead.first_name
+    lead_db.last_name = lead.last_name
+    lead_db.email = lead.email
+    lead_db.company = lead.company
+    lead_db.note = lead.note
+    lead_db.date_last_updated = datetime.datetime.now(datetime.timezone.utc)
+
+    db.commit()
+    db.refresh(lead_db)
+
+    return LeadScheme.model_validate(lead_db)
