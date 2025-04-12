@@ -4,12 +4,21 @@ import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from starlette.middleware.cors import CORSMiddleware
 
 from services import get_current_user
 from services import get_db, get_user_by_email, create_user, authenticate_user, create_token, create_lead, get_leads, get_lead, delete_lead, update_lead
 from schemas import UserCreateScheme, UserScheme, LeadScheme, LeadCreateScheme
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/api/users")
 async def user_create(user: UserCreateScheme, db: Session = Depends(get_db)):
@@ -58,4 +67,4 @@ async def lead_update(lead_id: int, lead: LeadCreateScheme, user: UserScheme = D
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=3001, reload=True)
+    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
