@@ -19,7 +19,7 @@ export const App = () => {
             const response = await fetch("/api", requestOptions)
             const data = await response.json()
 
-            if (!response.ok) {
+            if (response.ok) {
                 setMessage(data.message)
             }
         }
