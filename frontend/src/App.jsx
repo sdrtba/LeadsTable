@@ -18,7 +18,7 @@ export const App = () => {
                 },
             }
 
-            const response = await fetch("/api", requestOptions)
+            const response = await fetch("/api/welcome", requestOptions)
             const data = await response.json()
 
             if (response.ok) {

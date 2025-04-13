@@ -68,7 +68,7 @@ async def lead_update(lead_id: int, lead: LeadCreateScheme, user: UserScheme = D
     await update_lead(lead_id=lead_id, lead=lead, db=db, user=user)
     return {"message": "Success: updated"}
 
-@app.get("/api")
+@app.get("/api/welcome")
 async def get_api():
     return {"message": "Welcome to the API"}
 
