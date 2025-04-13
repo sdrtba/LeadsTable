@@ -25,6 +25,7 @@ app.add_middleware(
 
 def lifespan(app: FastAPI):
     create_database()
+    yield 
 
 @app.post("/api/users")
 async def user_create(user: UserCreateScheme, db: Session = Depends(get_db)):
