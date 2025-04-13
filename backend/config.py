@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     TOKEN_EXPIRATION_MINUTES: int
-    DEBUG: str
+    DEBUG: bool = False
 
     @property
     def DATABASE_URL_asyncpg(self):
