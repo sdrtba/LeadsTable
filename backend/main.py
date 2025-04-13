@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
 
 from services import get_current_user
-from services import get_db, get_user_by_email, create_user, authenticate_user, create_token, create_lead, get_leads, get_lead, delete_lead, update_lead
+from services import get_db, get_user_by_email, create_user, authenticate_user, create_token, create_lead, get_leads, get_lead, delete_lead, update_lead, create_database
 from schemas import UserCreateScheme, UserScheme, LeadScheme, LeadCreateScheme
 
 app = FastAPI()
@@ -22,6 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def lifespan(app: FastAPI):
+    create_database()
 
 @app.post("/api/users")
 async def user_create(user: UserCreateScheme, db: Session = Depends(get_db)):
